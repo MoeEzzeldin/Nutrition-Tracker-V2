@@ -63,6 +63,18 @@ const FluidIntake = ({ onUpdate }) => {
     }
   };
 
+  const handleClearAll = () => {
+    const confirmMessage = 'Are you sure you want to clear all fluid intake entries for today?';
+    if (window.confirm(confirmMessage)) {
+      const clearedData = {
+        goal: fluidData.goal,
+        entries: []
+      };
+      setFluidData(clearedData);
+      saveFluidData(clearedData);
+    }
+  };
+
   const saveFluidData = (updatedFluidData) => {
     const todayRecord = getTodayRecord();
     const record = {
@@ -93,9 +105,20 @@ const FluidIntake = ({ onUpdate }) => {
     <div className="card">
       <div className="card-header d-flex justify-content-between align-items-center">
         <h5 className="mb-0">Fluid Intake</h5>
-        <button className="btn btn-sm btn-outline-light" onClick={handleGoalChange}>
-          Goal: {fluidData.goal} oz
-        </button>
+        <div className="d-flex gap-2">
+          <button className="btn btn-sm btn-outline-light" onClick={handleGoalChange}>
+            Goal: {fluidData.goal} oz
+          </button>
+          {fluidData.entries.length > 0 && (
+            <button
+              className="btn btn-sm btn-outline-danger"
+              onClick={handleClearAll}
+              title="Clear all entries"
+            >
+              Clear All
+            </button>
+          )}
+        </div>
       </div>
       <div className="card-body">
         <div className="mb-3">
@@ -141,7 +164,7 @@ const FluidIntake = ({ onUpdate }) => {
         </div>
 
         <div>
-          <h6>Today's Intake</h6>
+          <h6>Today&apos;s Intake</h6>
           {fluidData.entries.length === 0 ? (
             <p className="text-muted small">No entries yet. Start tracking your fluid intake!</p>
           ) : (

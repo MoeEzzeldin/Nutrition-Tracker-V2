@@ -1,7 +1,7 @@
 :root {
   --bg-primary: #212121;
   --bg-secondary: #2d2d2d;
-  --bg-tertiary: #383838;
+  --bg-tertiary: #6e6e6e;
   --text-primary: #ffffff;
   --text-secondary: #b0b0b0;
   --accent-purple: #6a1b9a;
@@ -283,4 +283,53 @@ body {
 .content-wrapper {
   max-width: 1000px;
   margin: 0 auto;
+}
+
+/* Meal sections styling */
+.meal-section {
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  transition: border-color 0.3s ease;
+}
+
+.meal-section:hover {
+  border-color: var(--accent-purple);
+}
+
+.meal-section h6 {
+  color: var(--accent-purple);
+  font-weight: 600;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+/* Food item styling within meal sections */
+.meal-section .food-item {
+  background-color: var(--bg-secondary);
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.meal-section .food-item:hover {
+  border-color: var(--accent-purple);
+  transform: translateX(2px);
+}
+
+/* Daily totals enhanced styling */
+.daily-totals {
+  background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+  border: 2px solid var(--accent-purple);
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin-top: 2rem;
+}
+
+.daily-totals h6 {
+  color: var(--accent-purple);
+  font-weight: 600;
+  margin-bottom: 1rem;
 }

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import UnifiedSearchBar from './UnifiedSearchBar';
 import { saveRecord, getTodayRecord } from '../utils/storage';
 import { format } from 'date-fns';
+import SearchBar from './SearchBar';
 
 const NutritionForm = ({ onUpdate }) => {
   const todayRecord = getTodayRecord();
@@ -13,7 +13,8 @@ const NutritionForm = ({ onUpdate }) => {
   });
   const [editingItem, setEditingItem] = useState(null);
 
-  const handleAddFood = (mealType, foodItem) => {
+  const handleAddFood = (foodItem) => {
+    const mealType = foodItem.mealType || 'breakfast';
     const updatedMeals = {
       ...meals,
       [mealType]: [...meals[mealType], foodItem]
@@ -75,6 +76,36 @@ const NutritionForm = ({ onUpdate }) => {
     setEditingItem(null);
   };
 
+  const handleClearAll = () => {
+    const confirmMessage = 'Are you sure you want to clear all meals for today?';
+    if (window.confirm(confirmMessage)) {
+      const clearedMeals = {
+        breakfast: [],
+        lunch: [],
+        dinner: [],
+        snacks: []
+      };
+      setMeals(clearedMeals);
+      
+      const todayRecord = getTodayRecord();
+      const record = {
+        date: format(new Date(), 'yyyy-MM-dd'),
+        meals: clearedMeals,
+        healthMetrics: todayRecord?.healthMetrics || {
+          bloodPressure: {
+            morning: { systolic: '', diastolic: '', heartRate: '', time: '' },
+            afternoon: { systolic: '', diastolic: '', heartRate: '', time: '' },
+            evening: { systolic: '', diastolic: '', heartRate: '', time: '' }
+          }
+        },
+        fluidIntake: todayRecord?.fluidIntake || { goal: 66, entries: [] }
+      };
+      
+      saveRecord(record);
+      onUpdate();
+    }
+  };
+
   const calculateTotals = () => {
     let totals = { calories: 0, protein: 0, carbs: 0, fat: 0, sodium: 0, potassium: 0 };
     
@@ -93,23 +124,36 @@ const NutritionForm = ({ onUpdate }) => {
   };
 
   const totals = calculateTotals();
+  const hasMeals = Object.values(meals).some(mealType => mealType.length > 0);
 
   return (
     <div className="card">
-      <div className="card-header">
-        <h5 className="mb-0">Today's Meals - {format(new Date(), 'MM/dd/yyyy')}</h5>
+      <div className="card-header d-flex justify-content-between align-items-center">
+        <h5 className="mb-0">Today&apos;s Meals - {format(new Date(), 'MM/dd/yyyy')}</h5>
+        {hasMeals && (
+          <button
+            className="btn btn-sm btn-outline-danger"
+            onClick={handleClearAll}
+            title="Clear all meals"
+          >
+            Clear All
+          </button>
+        )}
       </div>
       <div className="card-body">
-        <div className="mb-4">
-          <UnifiedSearchBar onSelectFood={handleAddFood} />
+        <div className="mb-4 search-bar-container">
+          <SearchBar 
+            onSelectFood={handleAddFood} 
+            placeholder="Search food..."
+          />
         </div>
         
         {['breakfast', 'lunch', 'dinner', 'snacks'].map(mealType => (
-          <div key={mealType} className="mb-4">
-            <h6 className="text-capitalize">{mealType}</h6>
+          <div key={mealType} className="mb-4 p-3 border border-secondary rounded" style={{ backgroundColor: 'var(--bg-tertiary)' }}>
+            <h6 className="text-capitalize mb-3 pb-2 border-bottom border-secondary">{mealType}</h6>
             <div className="mt-2">
               {meals[mealType].length === 0 ? (
-                <p className="text-muted small">No items added yet</p>
+                <p className="text-muted small mb-0">No items added yet</p>
               ) : (
                 meals[mealType].map((item, index) => {
                   const isEditing = editingItem?.mealType === mealType && editingItem?.index === index;
@@ -192,14 +236,14 @@ const NutritionForm = ({ onUpdate }) => {
           </div>
         ))}
         
-        <div className="mt-4 p-3 bg-dark rounded">
-          <h6>Daily Totals</h6>
+        <div className="mt-4 p-3 bg-dark rounded border border-primary">
+          <h6 className="mb-3 text-primary">Daily Totals</h6>
           <div className="row">
             <div className="col-md-6">
-              <small>Sodium: {totals.sodium.toFixed(0)}mg</small>
+              <small>Sodium: <span className="fw-bold text-warning">{totals.sodium.toFixed(0)}mg</span></small>
             </div>
             <div className="col-md-6">
-              <small>Potassium: {totals.potassium.toFixed(0)}mg</small>
+              <small>Potassium: <span className="fw-bold text-info">{totals.potassium.toFixed(0)}mg</span></small>
             </div>
           </div>
         </div>

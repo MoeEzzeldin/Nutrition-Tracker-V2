@@ -105,7 +105,7 @@ export const exportToPDF = (records) => {
   doc.text('Daily Meals Breakdown', 14, yPosition);
   yPosition += 10;
   
-  records.forEach((record, index) => {
+  records.forEach((record, _index) => {
     if (yPosition > 250) {
       doc.addPage();
       doc.setFillColor(33, 33, 33);

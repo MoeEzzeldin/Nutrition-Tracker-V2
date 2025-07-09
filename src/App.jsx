@@ -10,7 +10,6 @@ import { cleanOldRecords, getRecords } from './utils/storage';
 function App() {
   const [records, setRecords] = useState([]);
   const [activeTab, setActiveTab] = useState('today');
-
   useEffect(() => {
     cleanOldRecords();
     const savedRecords = getRecords();
@@ -37,7 +36,7 @@ function App() {
               className={`nav-link ${activeTab === 'today' ? 'active' : ''}`}
               onClick={() => setActiveTab('today')}
             >
-              Today's Entry
+              Today&apos;s Entry
             </button>
           </li>
           <li className="nav-item">
