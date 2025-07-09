@@ -157,6 +157,20 @@ const HealthMetrics = ({ onUpdate }) => {
     }
   };
 
+  const handleResetAll = () => {
+    if (window.confirm('Are you sure you want to reset all blood pressure metrics to default?')) {
+      const resetMetrics = {
+        bloodPressure: {
+          morning: { systolic: '', diastolic: '', heartRate: '', time: '', period: 'AM' },
+          afternoon: { systolic: '', diastolic: '', heartRate: '', time: '', period: 'PM' },
+          evening: { systolic: '', diastolic: '', heartRate: '', time: '', period: 'PM' }
+        }
+      };
+      setMetrics(resetMetrics);
+      saveMetrics(resetMetrics);
+    }
+  };
+
   // Format time values to ensure they match HH:mm format
   const formatTimeValue = (timeValue) => {
     if (!timeValue) return '';
@@ -302,8 +316,15 @@ const HealthMetrics = ({ onUpdate }) => {
 
   return (
     <div className="card">
-      <div className="card-header">
+      <div className="card-header d-flex justify-content-between align-items-center">
         <h5 className="mb-0">Health Metrics - {format(new Date(), 'MM/dd/yyyy')}</h5>
+        <button
+          className="btn btn-sm btn-outline-danger"
+          onClick={handleResetAll}
+          title="Reset all blood pressure metrics"
+        >
+          Reset Metrics
+        </button>
       </div>
       <div className="card-body">
         <div className="d-flex justify-content-between align-items-center mb-3">
