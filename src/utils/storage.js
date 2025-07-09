@@ -93,3 +93,28 @@ export const cleanOldRecords = () => {
   safeLocalStorage.setItem(STORAGE_KEY, JSON.stringify(recentRecords));
 };
 
+// UI Preferences
+export const getUIPreferences = () => {
+  const preferences = localStorage.getItem('uiPreferences');
+  return preferences ? JSON.parse(preferences) : {};
+};
+
+export const saveUIPreference = (key, value) => {
+  const preferences = getUIPreferences();
+  preferences[key] = value;
+  localStorage.setItem('uiPreferences', JSON.stringify(preferences));
+};
+
+export const getUIPreference = (key, defaultValue = null) => {
+  const preferences = getUIPreferences();
+  return preferences[key] !== undefined ? preferences[key] : defaultValue;
+};
+
+// Clear all UI preferences
+export const clearUIPreferences = () => {
+  localStorage.removeItem('nutritionCollapseState');
+  localStorage.removeItem('bpCollapseState');
+  localStorage.removeItem('fluidIntakeExpanded');
+  localStorage.removeItem('uiPreferences');
+};
+

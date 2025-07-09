@@ -101,6 +101,19 @@ const FluidIntake = ({ onUpdate }) => {
   const percentComplete = Math.min((totalFluid / fluidData.goal) * 100, 100);
   const remaining = Math.max(fluidData.goal - totalFluid, 0);
 
+  const [isExpanded, setIsExpanded] = useState(() => {
+    const saved = localStorage.getItem('fluidIntakeExpanded');
+    return saved !== null ? JSON.parse(saved) : true; // Default to expanded
+  });
+
+  useEffect(() => {
+    localStorage.setItem('fluidIntakeExpanded', JSON.stringify(isExpanded));
+  }, [isExpanded]);
+
+  const toggleExpanded = () => {
+    setIsExpanded(prev => !prev);
+  };
+
   return (
     <div className="card">
       <div className="card-header d-flex justify-content-between align-items-center">
@@ -144,20 +157,20 @@ const FluidIntake = ({ onUpdate }) => {
 
         <div className="mb-3">
           <h6>Quick Add</h6>
-          <div className="btn-group w-100" role="group">
-            <button className="btn btn-outline-primary" onClick={() => handleQuickAdd(8)}>
+          <div className="d-flex flex-wrap gap-2">
+            <button className="btn fluid-quick-btn" onClick={() => handleQuickAdd(8)}>
               8 oz
             </button>
-            <button className="btn btn-outline-primary" onClick={() => handleQuickAdd(12)}>
+            <button className="btn fluid-quick-btn" onClick={() => handleQuickAdd(12)}>
               12 oz
             </button>
-            <button className="btn btn-outline-primary" onClick={() => handleQuickAdd(16)}>
+            <button className="btn fluid-quick-btn" onClick={() => handleQuickAdd(16)}>
               16 oz
             </button>
-            <button className="btn btn-outline-primary" onClick={() => handleQuickAdd(20)}>
+            <button className="btn fluid-quick-btn" onClick={() => handleQuickAdd(20)}>
               20 oz
             </button>
-            <button className="btn btn-outline-primary" onClick={handleCustomAdd}>
+            <button className="btn fluid-quick-btn fluid-custom-btn" onClick={handleCustomAdd}>
               Custom
             </button>
           </div>
@@ -168,7 +181,7 @@ const FluidIntake = ({ onUpdate }) => {
           {fluidData.entries.length === 0 ? (
             <p className="text-muted small">No entries yet. Start tracking your fluid intake!</p>
           ) : (
-            <div className="fluid-entries" style={{ maxHeight: '200px', overflowY: 'auto' }}>
+            <div className="fluid-entries" style={{ maxHeight: "200px", overflowY: "auto" }}>
               {fluidData.entries.map((entry, index) => (
                 <div key={index} className="d-flex justify-content-between align-items-center mb-2 p-2 bg-dark rounded">
                   <div>
@@ -178,8 +191,9 @@ const FluidIntake = ({ onUpdate }) => {
                   <button
                     className="btn btn-sm btn-outline-danger"
                     onClick={() => handleRemoveEntry(index)}
+                    aria-label="Remove entry"
                   >
-                    ×
+                    <span aria-hidden="true">×</span>
                   </button>
                 </div>
               ))}

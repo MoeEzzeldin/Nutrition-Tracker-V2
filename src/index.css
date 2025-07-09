@@ -7,42 +7,33 @@ body {
   padding: 0;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
-}
-
-/* Dropdown styling to ensure consistent appearance */
-.form-select {
-  appearance: auto;
-  background-color: var(--bg-tertiary, #383838);
-  color: var(--text-primary, #ffffff);
-  border: 1px solid var(--border-color, #424242);
-  border-radius: 0.25rem;
-  padding: 0.375rem 0.75rem;
-  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-}
-
-.form-select:focus {
-  border-color: var(--accent-purple, #6a1b9a);
-  box-shadow: 0 0 0 0.25rem rgba(106, 27, 154, 0.25);
-}
-
-.form-select option,
-.form-select optgroup {
-  background-color: var(--bg-tertiary, #383838);
-  color: var(--text-primary, #ffffff);
-}
-
-/* Better responsiveness for inline elements */
-@media (max-width: 768px) {
-  .d-flex.flex-wrap.align-items-center.gap-2 {
-    gap: 0.5rem !important;
+/* Mobile optimization enhancements */
+@media (max-width: 576px) {
+  /* Improve readability and tap targets on small screens */
+  body {
+    font-size: 14px;
   }
-
+  
+  /* Better spacing for touch elements */
   .form-select,
-  .input-group {
+  .form-control,
+  .input-group,
+  .btn {
+    margin-bottom: 0.5rem;
+  }
+  
+  /* Ensure proper width for inputs */
+  .search-bar-container .form-select,
+  .search-bar-container .form-control {
     width: 100%;
+  }
+  
+  /* Better touch targets */
+  .search-bar-container .btn,
+  .search-bar-container .form-select,
+  .search-bar-container .form-control {
+    height: 44px;
+    font-size: 16px; /* Prevents iOS zoom on input focus */
   }
 }
 
@@ -92,5 +83,67 @@ code {
   .search-bar-container .btn {
     font-size: 0.875rem;
     padding: 0.375rem 0.75rem;
+  }
+}
+
+/* Ensure proper row/column spacing */
+.row.g-2 {
+  margin-left: -0.5rem;
+  margin-right: -0.5rem;
+}
+
+.row.g-2 > .col,
+.row.g-2 > [class*="col-"] {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+/* Simplify responsive layouts with better spacing */
+.d-flex.flex-wrap {
+  gap: 0.5rem;
+}
+
+/* Make touch scrolling smooth */
+div[style*="overflow"] {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+/* Dropdown styling to ensure consistent appearance */
+.form-select {
+  appearance: auto;
+  background-color: var(--bg-tertiary, #383838);
+  color: var(--text-primary, #ffffff);
+  border: 1px solid var(--border-color, #424242);
+  border-radius: 0.25rem;
+  padding: 0.375rem 0.75rem;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-select:focus {
+  border-color: var(--accent-purple, #6a1b9a);
+  box-shadow: 0 0 0 0.25rem rgba(106, 27, 154, 0.25);
+}
+
+.form-select option,
+.form-select optgroup {
+  background-color: var(--bg-tertiary, #383838);
+  color: var(--text-primary, #ffffff);
+}
+
+/* Better responsiveness for inline elements */
+@media (max-width: 768px) {
+  .d-flex.flex-wrap.align-items-center.gap-2 {
+    gap: 0.5rem !important;
+  }
+
+  .form-select,
+  .input-group {
+    width: 100%;
   }
 }

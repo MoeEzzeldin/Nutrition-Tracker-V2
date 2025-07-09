@@ -290,46 +290,425 @@ body {
   background-color: var(--bg-tertiary);
   border: 1px solid var(--border-color);
   border-radius: 8px;
-  padding: 1rem;
   margin-bottom: 1.5rem;
   transition: border-color 0.3s ease;
+  overflow: hidden;
 }
 
-.meal-section:hover {
+.meal-header {
+  background-color: rgba(106, 27, 154, 0.1);
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-bottom: 1px solid var(--border-color);
+  user-select: none;
+}
+
+.meal-header:hover {
+  background-color: rgba(106, 27, 154, 0.2);
+}
+
+.meal-header h6 {
+  margin: 0;
+  color: var(--accent-purple);
+  font-weight: 600;
+}
+
+.meal-header.has-items h6 {
+  color: var(--text-primary);
+}
+
+.meal-collapse-toggle {
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.1);
+  transition: all 0.2s ease;
+  pointer-events: none; /* Prevent double-click issues */
+}
+
+.meal-header:hover .meal-collapse-toggle {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.meal-collapse-toggle i {
+  font-size: 1.2rem;
+  transition: transform 0.2s ease;
+}
+
+/* Fixed collapse animation */
+.meal-collapse {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+              opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              padding 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 0 1rem;
+}
+
+.meal-collapse.show {
+  max-height: 2000px; /* Increased to accommodate more content */
+  opacity: 1;
+  padding: 1rem;
+}
+
+.meal-items-container {
+  padding: 0.5rem 0;
+  width: 100%; /* Ensure consistent width */
+}
+
+/* Prevent layout shifts during animation */
+.meal-section > * {
+  width: 100%;
+}
+
+/* Remove focus outline but maintain accessibility */
+.meal-collapse-toggle:focus,
+.meal-collapse-toggle:hover {
+  text-decoration: none;
+  color: var(--text-primary);
+  outline: none;
+}
+
+/* Add focus-visible for keyboard navigation */
+.meal-header:focus-visible {
+  outline: 2px solid var(--accent-purple);
+  outline-offset: -2px;
+}
+
+/* Mobile optimizations for meal sections */
+@media (max-width: 576px) {
+  .meal-section {
+    margin-bottom: 1rem;
+  }
+  
+  .meal-header {
+    padding: 10px 12px;
+  }
+  
+  .meal-collapse.show {
+    padding: 0.75rem;
+  }
+  
+  .meal-header h6 {
+    font-size: 0.95rem;
+  }
+}
+
+/* On desktop, optionally show all sections expanded by default */
+@media (min-width: 992px) {
+  .meal-section {
+    transition: all 0.3s ease;
+  }
+  
+  .meal-section:hover {
+    border-color: var(--accent-purple);
+    box-shadow: 0 2px 8px rgba(106, 27, 154, 0.2);
+  }
+}
+
+/* BP collapse styles - ensure consistency */
+.bp-collapse {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+              opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              padding 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 0 1rem;
+}
+
+.bp-collapse.show {
+  max-height: 600px;
+  opacity: 1;
+  padding: 0.5rem 1rem;
+}
+
+/* Prevent button from triggering its own events */
+.bp-collapse-toggle {
+  pointer-events: none;
+}
+
+.bp-period-header {
+  user-select: none;
+}
+  
+  /* Wider width for time input */
+  .bp-input-time {
+    width: 60% !important;
+    flex-grow: 1;
+  }
+  
+  /* Wider width for AM/PM selector */
+  .bp-input-ampm {
+    width: 40% !important;
+    min-width: 80px;
+  }
+  
+  /* Apply better spacing for the blood pressure form on mobile */
+  .bp-form-container .form-control,
+  .bp-form-container .form-select {
+    margin-bottom: 8px;
+    height: 44px; /* Better touch targets */
+  }
+  
+  /* Make labels more compact but still readable */
+  .bp-form-container label {
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+  }
+  
+  /* Better period separation */
+  .bp-period-section {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+  }
+  
+  /* Last period section needs no border */
+  .bp-period-section:last-of-type {
+    border-bottom: none;
+    margin-bottom: 0;
+  }
+
+
+/* Create a 2-column layout for BP data collection on larger screens */
+@media (min-width: 577px) {
+  .bp-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+  
+  .bp-input-narrow {
+    width: calc(33% - 8px);
+  }
+  
+  .bp-input-time {
+    width: 60%;
+  }
+  
+  .bp-input-ampm {
+    width: 40%;
+  }
+}
+
+/* For all screen sizes */
+.bp-input-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.bp-time-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+/* Blood pressure collapsible styling */
+.bp-period-header {
+  background-color: rgba(106, 27, 154, 0.1);
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.bp-period-header:hover {
+  background-color: rgba(106, 27, 154, 0.2);
   border-color: var(--accent-purple);
 }
 
-.meal-section h6 {
-  color: var(--accent-purple);
-  font-weight: 600;
-  margin-bottom: 1rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid var(--border-color);
+.bp-period-header h6 {
+  margin: 0;
+  font-size: 1rem;
 }
 
-/* Food item styling within meal sections */
-.meal-section .food-item {
-  background-color: var(--bg-secondary);
-  border: 1px solid transparent;
+.bp-collapse-toggle {
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.1);
   transition: all 0.2s ease;
 }
 
-.meal-section .food-item:hover {
-  border-color: var(--accent-purple);
-  transform: translateX(2px);
+.bp-collapse-toggle:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
 }
 
-/* Daily totals enhanced styling */
-.daily-totals {
-  background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
-  border: 2px solid var(--accent-purple);
-  border-radius: 8px;
-  padding: 1.25rem;
-  margin-top: 2rem;
+.bp-collapse-toggle i {
+  font-size: 1.2rem;
+  transition: transform 0.2s ease;
 }
 
-.daily-totals h6 {
-  color: var(--accent-purple);
+.bp-collapse {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+  padding: 0;
+}
+
+.bp-collapse.show {
+  max-height: 400px;
+  padding: 0.5rem 1rem;
+  transition: max-height 0.3s ease-in;
+}
+
+/* BP period section with data indicator */
+.bp-period-header.has-data {
+  background-color: rgba(34, 197, 94, 0.1);
+  border-color: rgba(34, 197, 94, 0.3);
+}
+
+/* Remove Bootstrap's default link styling */
+.bp-collapse-toggle:focus,
+.bp-collapse-toggle:hover {
+  text-decoration: none;
+  color: var(--text-primary);
+}
+
+/* Responsive adjustments */
+@media (min-width: 577px) {
+  /* On larger screens, we might want different behavior */
+  .bp-period-section {
+    margin-bottom: 1.5rem;
+  }
+}
+
+/* Fluid intake quick buttons styling for better visibility */
+.fluid-quick-btn {
+  background-color: #7c3aed; /* Solid violet background - always visible */
+  color: #ffffff; /* White text for contrast */
+  border: 2px solid #8b5cf6; /* Light purple border */
   font-weight: 600;
-  margin-bottom: 1rem;
+  transition: all 0.3s ease;
+  flex-grow: 1;
+  min-height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.3);
+  position: relative;
+  overflow: hidden;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.fluid-quick-btn:hover, .fluid-quick-btn:focus {
+  background-color: #8b5cf6; /* Lighter purple on hover */
+  color: white;
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.6), 
+              0 0 40px rgba(139, 92, 246, 0.4),
+              0 0 60px rgba(139, 92, 246, 0.2);
+  border-color: #a78bfa;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.fluid-quick-btn:active {
+  transform: translateY(0) scale(0.98);
+  box-shadow: 0 2px 10px rgba(139, 92, 246, 0.4),
+              inset 0 2px 4px rgba(0, 0, 0, 0.2);
+  background-color: #6d28d9;
+}
+
+/* Gradient overlay for depth */
+.fluid-quick-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(255, 255, 255, 0.2) 50%, 
+    transparent 100%);
+  pointer-events: none;
+  transition: left 0.5s ease;
+}
+
+.fluid-quick-btn:hover::before {
+  left: 100%;
+}
+
+/* Custom button special styling */
+.fluid-quick-btn.fluid-custom-btn {
+  background-color: #9333ea; /* Purple background */
+  border-color: #a855f7;
+  color: #ffffff;
+}
+
+.fluid-quick-btn.fluid-custom-btn:hover {
+  background-color: #a855f7;
+  box-shadow: 0 4px 20px rgba(168, 85, 247, 0.7), 
+              0 0 45px rgba(168, 85, 247, 0.5),
+              0 0 65px rgba(168, 85, 247, 0.3);
+  border-color: #c084fc;
+}
+
+/* Mobile specific enhancements */
+@media (max-width: 576px) {
+  .fluid-quick-btn {
+    font-size: 0.95rem;
+    padding: 0.5rem 0.75rem;
+    background-color: #7c3aed; /* Ensure solid color on mobile */
+    border-width: 2px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    min-height: 48px; /* Better touch target */
+  }
+  
+  /* Remove animation on mobile to save battery */
+  .fluid-quick-btn {
+    animation: none;
+  }
+}
+
+/* Ensure visibility on all backgrounds */
+.card-body .fluid-quick-btn {
+  backdrop-filter: none; /* Remove blur for better performance */
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .fluid-quick-btn {
+    background-color: #6d28d9;
+    border-width: 3px;
+    border-color: #ffffff;
+  }
+  
+  .fluid-quick-btn:hover {
+    background-color: #a855f7;
+    border-color: #ffffff;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .fluid-quick-btn {
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+  
+  .fluid-quick-btn:hover {
+    transform: none;
+  }
+  
+  .fluid-quick-btn::before {
+    display: none;
+  }
 }

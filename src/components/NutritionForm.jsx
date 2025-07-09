@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { saveRecord, getTodayRecord } from '../utils/storage';
 import { format } from 'date-fns';
 import SearchBar from './SearchBar';
@@ -12,6 +12,41 @@ const NutritionForm = ({ onUpdate }) => {
     snacks: []
   });
   const [editingItem, setEditingItem] = useState(null);
+  
+  // Load collapse state from localStorage or use defaults
+  const getInitialCollapseState = () => {
+    const saved = localStorage.getItem('nutritionCollapseState');
+    if (saved) {
+      return JSON.parse(saved);
+    }
+    return {
+      breakfast: true, // Default expanded
+      lunch: false,
+      dinner: false,
+      snacks: false
+    };
+  };
+  
+  const [collapseState, setCollapseState] = useState(getInitialCollapseState());
+
+  // Save collapse state to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('nutritionCollapseState', JSON.stringify(collapseState));
+  }, [collapseState]);
+
+  // Toggle collapse for a meal type
+  const toggleCollapse = (mealType) => {
+    setCollapseState(prev => ({
+      ...prev,
+      [mealType]: !prev[mealType]
+    }));
+  };
+
+  // Prevent event bubbling for nested buttons
+  const handleNestedClick = (e, callback) => {
+    e.stopPropagation();
+    callback();
+  };
 
   const handleAddFood = (foodItem) => {
     const mealType = foodItem.mealType || 'breakfast';
@@ -126,6 +161,9 @@ const NutritionForm = ({ onUpdate }) => {
   const totals = calculateTotals();
   const hasMeals = Object.values(meals).some(mealType => mealType.length > 0);
 
+  // Helper function to check if a meal type has items
+  const hasItems = (mealType) => meals[mealType] && meals[mealType].length > 0;
+
   return (
     <div className="card">
       <div className="card-header d-flex justify-content-between align-items-center">
@@ -148,93 +186,123 @@ const NutritionForm = ({ onUpdate }) => {
           />
         </div>
         
-        {['breakfast', 'lunch', 'dinner', 'snacks'].map(mealType => (
-          <div key={mealType} className="mb-4 p-3 border border-secondary rounded" style={{ backgroundColor: 'var(--bg-tertiary)' }}>
-            <h6 className="text-capitalize mb-3 pb-2 border-bottom border-secondary">{mealType}</h6>
-            <div className="mt-2">
-              {meals[mealType].length === 0 ? (
-                <p className="text-muted small mb-0">No items added yet</p>
-              ) : (
-                meals[mealType].map((item, index) => {
-                  const isEditing = editingItem?.mealType === mealType && editingItem?.index === index;
-                  
-                  return (
-                    <div key={index} className="d-flex justify-content-between align-items-center mb-2 p-2 bg-dark rounded">
-                      <div className="flex-grow-1">
-                        <span>{item.name}</span>
-                        {isEditing ? (
-                          <div className="mt-2 d-flex gap-2">
-                            <input
-                              type="number"
-                              className="form-control form-control-sm"
-                              style={{ width: '100px' }}
-                              placeholder="Sodium (mg)"
-                              defaultValue={item.sodium}
-                              id={`sodium-${mealType}-${index}`}
-                            />
-                            <input
-                              type="number"
-                              className="form-control form-control-sm"
-                              style={{ width: '100px' }}
-                              placeholder="Potassium (mg)"
-                              defaultValue={item.potassium}
-                              id={`potassium-${mealType}-${index}`}
-                            />
+        {['breakfast', 'lunch', 'dinner', 'snacks'].map(mealType => {
+          const isExpanded = collapseState[mealType];
+          
+          return (
+            <div key={mealType} className="meal-section mb-4">
+              <div 
+                className={`meal-header d-flex align-items-center justify-content-between ${hasItems(mealType) ? 'has-items' : ''}`}
+                onClick={() => toggleCollapse(mealType)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    toggleCollapse(mealType);
+                  }
+                }}
+              >
+                <h6 className="text-capitalize mb-0 d-flex align-items-center">
+                  {mealType}
+                  {hasItems(mealType) && (
+                    <span className="text-muted ms-2">({meals[mealType].length})</span>
+                  )}
+                </h6>
+                <span 
+                  className="meal-collapse-toggle"
+                  aria-hidden="true"
+                >
+                  <i className={`bi ${isExpanded ? 'bi-chevron-up' : 'bi-chevron-down'}`}></i>
+                </span>
+              </div>
+              
+              <div className={`meal-collapse ${isExpanded ? 'show' : ''}`} id={`${mealType}-collapse`}>
+                <div className="meal-items-container">
+                  {meals[mealType].length === 0 ? (
+                    <p className="text-muted small mb-0">No items added yet</p>
+                  ) : (
+                    meals[mealType].map((item, index) => {
+                      const isEditing = editingItem?.mealType === mealType && editingItem?.index === index;
+                      
+                      return (
+                        <div key={index} className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-2 p-2 bg-dark rounded">
+                          <div className="flex-grow-1 mb-2 mb-md-0">
+                            <span>{item.name}</span>
+                            {isEditing ? (
+                              <div className="mt-2 d-flex flex-wrap gap-2">
+                                <input
+                                  type="number"
+                                  className="form-control form-control-sm"
+                                  style={{ width: '100px' }}
+                                  placeholder="Sodium (mg)"
+                                  defaultValue={item.sodium}
+                                  id={`sodium-${mealType}-${index}`}
+                                />
+                                <input
+                                  type="number"
+                                  className="form-control form-control-sm"
+                                  style={{ width: '100px' }}
+                                  placeholder="Potassium (mg)"
+                                  defaultValue={item.potassium}
+                                  id={`potassium-${mealType}-${index}`}
+                                />
+                              </div>
+                            ) : (
+                              <div className="text-muted small mt-1">
+                                Sodium: {parseFloat(item.sodium).toFixed(0)}mg | Potassium: {parseFloat(item.potassium).toFixed(0)}mg
+                              </div>
+                            )}
                           </div>
-                        ) : null}
-                      </div>
-                      <div className="d-flex align-items-center">
-                        {!isEditing && (
-                          <span className="text-muted me-3">
-                            Sodium: {parseFloat(item.sodium).toFixed(0)}mg | Potassium: {parseFloat(item.potassium).toFixed(0)}mg
-                          </span>
-                        )}
-                        {isEditing ? (
-                          <>
-                            <button 
-                              className="btn btn-sm btn-success me-2"
-                              onClick={() => {
-                                const sodiumInput = document.getElementById(`sodium-${mealType}-${index}`);
-                                const potassiumInput = document.getElementById(`potassium-${mealType}-${index}`);
-                                handleSaveEdit(mealType, index, {
-                                  sodium: parseFloat(sodiumInput.value) || item.sodium,
-                                  potassium: parseFloat(potassiumInput.value) || item.potassium
-                                });
-                              }}
-                            >
-                              Save
-                            </button>
-                            <button 
-                              className="btn btn-sm btn-secondary me-2"
-                              onClick={handleCancelEdit}
-                            >
-                              Cancel
-                            </button>
-                          </>
-                        ) : (
-                          <>
-                            <button 
-                              className="btn btn-sm btn-warning me-2"
-                              onClick={() => handleEditFood(mealType, index)}
-                            >
-                              Edit
-                            </button>
-                            <button 
-                              className="btn btn-sm btn-danger"
-                              onClick={() => handleRemoveFood(mealType, index)}
-                            >
-                              Remove
-                            </button>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })
-              )}
+                          <div className="d-flex align-items-center mt-2 mt-md-0 w-100 justify-content-end flex-wrap gap-2">
+                            {isEditing ? (
+                              <>
+                                <button 
+                                  className="btn btn-sm btn-success"
+                                  onClick={() => {
+                                    const sodiumInput = document.getElementById(`sodium-${mealType}-${index}`);
+                                    const potassiumInput = document.getElementById(`potassium-${mealType}-${index}`);
+                                    handleSaveEdit(mealType, index, {
+                                      sodium: parseFloat(sodiumInput.value) || item.sodium,
+                                      potassium: parseFloat(potassiumInput.value) || item.potassium
+                                    });
+                                  }}
+                                >
+                                  Save
+                                </button>
+                                <button 
+                                  className="btn btn-sm btn-secondary"
+                                  onClick={handleCancelEdit}
+                                >
+                                  Cancel
+                                </button>
+                              </>
+                            ) : (
+                              <>
+                                <button 
+                                  className="btn btn-sm btn-warning"
+                                  onClick={(e) => handleNestedClick(e, () => handleEditFood(mealType, index))}
+                                >
+                                  Edit
+                                </button>
+                                <button 
+                                  className="btn btn-sm btn-danger"
+                                  onClick={(e) => handleNestedClick(e, () => handleRemoveFood(mealType, index))}
+                                >
+                                  Remove
+                                </button>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
         
         <div className="mt-4 p-3 bg-dark rounded border border-primary">
           <h6 className="mb-3 text-primary">Daily Totals</h6>

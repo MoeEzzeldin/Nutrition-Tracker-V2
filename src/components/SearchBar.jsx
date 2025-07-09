@@ -151,92 +151,99 @@ const SearchBar = ({ onSelectFood, placeholder }) => {
 
   return (
     <div className="position-relative">
-      <div className="d-flex align-items-center gap-2">
-        {/* Meal Type Dropdown */}
-        <select 
-          className="form-select flex-shrink-0" 
-          value={mealType} 
-          onChange={(e) => setMealType(e.target.value)}
-          style={{ width: '110px' }}
-          aria-label="Select meal type"
-        >
-          <option value="breakfast">Breakfast</option>
-          <option value="lunch">Lunch</option>
-          <option value="dinner">Dinner</option>
-          <option value="snacks">Snacks</option>
-        </select>
-        
-        {/* Quantity Input */}
-        <input
-          type="number"
-          className="form-control flex-shrink-0"
-          placeholder="Qty"
-          value={quantity}
-          onChange={(e) => setQuantity(e.target.value)}
-          onKeyDown={handleKeyDown}
-          style={{ width: '70px' }}
-          min="0.1"
-          step="0.1"
-          aria-label="Quantity"
-        />
-        
-        {/* Units Dropdown */}
-        <select 
-          className="form-select flex-shrink-0"
-          value={units}
-          onChange={(e) => setUnits(e.target.value)}
-          style={{ width: '100px' }}
-          aria-label="Select units"
-        >
-          <optgroup label="Weight">
-            <option value="g">g</option>
-            <option value="kg">kg</option>
-            <option value="oz">oz</option>
-            <option value="lb">lb</option>
-          </optgroup>
-          <optgroup label="Volume">
-            <option value="ml">ml</option>
-            <option value="L">L</option>
-            <option value="cup">cup</option>
-            <option value="tbsp">tbsp</option>
-            <option value="tsp">tsp</option>
-            <option value="fl oz">fl oz</option>
-          </optgroup>
-          <optgroup label="Other">
-            <option value="piece">piece</option>
-            <option value="serving">serving</option>
-          </optgroup>
-        </select>
-        
-        {/* Search Input and Button */}
-        <div className="input-group flex-grow-1">
-          <input
-            type="text"
-            className="form-control"
-            placeholder={placeholder || "Search food..."}
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onKeyDown={handleKeyDown}
-            aria-label="Search food"
-            aria-describedby="search-button"
-            aria-autocomplete="list"
-            aria-controls={showResults ? "search-results-list" : undefined}
-            aria-activedescendant={selectedResultIndex >= 0 ? `search-result-${selectedResultIndex}` : undefined}
-          />
-          <button 
-            className="btn btn-primary" 
-            type="button"
-            onClick={searchFood}
-            disabled={loading}
-            id="search-button"
-            aria-label={loading ? "Searching..." : "Search"}
-          >
-            {loading ? (
-              <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-            ) : (
-              'Search'
-            )}
-          </button>
+      <div className="search-form">
+        <div className="row g-2">
+          {/* Meal Type Dropdown */}
+          <div className="col-6 col-sm-auto">
+            <select 
+              className="form-select flex-shrink-0" 
+              value={mealType} 
+              onChange={(e) => setMealType(e.target.value)}
+              aria-label="Select meal type"
+            >
+              <option value="breakfast">Breakfast</option>
+              <option value="lunch">Lunch</option>
+              <option value="dinner">Dinner</option>
+              <option value="snacks">Snacks</option>
+            </select>
+          </div>
+          
+          {/* Quantity Input */}
+          <div className="col-3 col-sm-auto">
+            <input
+              type="number"
+              className="form-control flex-shrink-0"
+              placeholder="Qty"
+              value={quantity}
+              onChange={(e) => setQuantity(e.target.value)}
+              onKeyDown={handleKeyDown}
+              min="0.1"
+              step="0.1"
+              aria-label="Quantity"
+            />
+          </div>
+          
+          {/* Units Dropdown */}
+          <div className="col-3 col-sm-auto">
+            <select 
+              className="form-select flex-shrink-0"
+              value={units}
+              onChange={(e) => setUnits(e.target.value)}
+              aria-label="Select units"
+            >
+              <optgroup label="Weight">
+                <option value="g">g</option>
+                <option value="kg">kg</option>
+                <option value="oz">oz</option>
+                <option value="lb">lb</option>
+              </optgroup>
+              <optgroup label="Volume">
+                <option value="ml">ml</option>
+                <option value="L">L</option>
+                <option value="cup">cup</option>
+                <option value="tbsp">tbsp</option>
+                <option value="tsp">tsp</option>
+                <option value="fl oz">fl oz</option>
+              </optgroup>
+              <optgroup label="Other">
+                <option value="piece">piece</option>
+                <option value="serving">serving</option>
+              </optgroup>
+            </select>
+          </div>
+          
+          {/* Search Input and Button */}
+          <div className="col-12">
+            <div className="input-group">
+              <input
+                type="text"
+                className="form-control"
+                placeholder={placeholder || "Search food..."}
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                onKeyDown={handleKeyDown}
+                aria-label="Search food"
+                aria-describedby="search-button"
+                aria-autocomplete="list"
+                aria-controls={showResults ? "search-results-list" : undefined}
+                aria-activedescendant={selectedResultIndex >= 0 ? `search-result-${selectedResultIndex}` : undefined}
+              />
+              <button 
+                className="btn btn-primary" 
+                type="button"
+                onClick={searchFood}
+                disabled={loading}
+                id="search-button"
+                aria-label={loading ? "Searching..." : "Search"}
+              >
+                {loading ? (
+                  <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                ) : (
+                  'Search'
+                )}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
       
