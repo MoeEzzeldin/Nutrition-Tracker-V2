@@ -157,33 +157,6 @@ const HealthMetrics = ({ onUpdate }) => {
     }
   };
 
-  const handleBPChange = (period, field, value) => {
-    // Add special handling for time field to ensure proper HH:mm format
-    if (field === 'time') {
-      // Format the time to ensure it matches the HH:mm format
-      if (value && !value.match(/^\d{2}:\d{2}$/)) {
-        // Try to fix common format issues
-        const timeParts = value.split(':');
-        if (timeParts.length === 2) {
-          const hours = timeParts[0].padStart(2, '0');
-          const minutes = timeParts[1].padStart(2, '0');
-          value = `${hours}:${minutes}`;
-        }
-      }
-    }
-
-    setMetrics(prev => ({
-      ...prev,
-      bloodPressure: {
-        ...prev.bloodPressure,
-        [period]: {
-          ...prev.bloodPressure[period],
-          [field]: value
-        }
-      }
-    }));
-  };
-
   // Format time values to ensure they match HH:mm format
   const formatTimeValue = (timeValue) => {
     if (!timeValue) return '';
@@ -249,7 +222,7 @@ const HealthMetrics = ({ onUpdate }) => {
                 className="form-control bp-input-narrow" 
                 placeholder="Sys"
                 value={data.systolic}
-                onChange={(e) => handleBPChange(period, 'systolic', e.target.value)}
+                onChange={e => handleBloodPressureChange(period, 'systolic', e.target.value)}
               />
             </div>
             
@@ -261,7 +234,7 @@ const HealthMetrics = ({ onUpdate }) => {
                 className="form-control bp-input-narrow" 
                 placeholder="Dia"
                 value={data.diastolic}
-                onChange={(e) => handleBPChange(period, 'diastolic', e.target.value)}
+                onChange={e => handleBloodPressureChange(period, 'diastolic', e.target.value)}
               />
             </div>
             
@@ -273,7 +246,7 @@ const HealthMetrics = ({ onUpdate }) => {
                 className="form-control bp-input-narrow" 
                 placeholder="HR"
                 value={data.heartRate}
-                onChange={(e) => handleBPChange(period, 'heartRate', e.target.value)}
+                onChange={e => handleBloodPressureChange(period, 'heartRate', e.target.value)}
               />
             </div>
           </div>
@@ -286,7 +259,7 @@ const HealthMetrics = ({ onUpdate }) => {
                 type="time" 
                 className="form-control bp-input-time" 
                 value={formatTimeValue(data.time)}
-                onChange={(e) => handleBPChange(period, 'time', e.target.value)}
+                onChange={e => handleBloodPressureChange(period, 'time', e.target.value)}
               />
             </div>
           </div>
