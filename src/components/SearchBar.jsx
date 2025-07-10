@@ -3,7 +3,7 @@ import axios from 'axios';
 
 const SearchBar = ({ onSelectFood, placeholder }) => {
   const [query, setQuery] = useState('');
-  const [quantity, setQuantity] = useState('1');
+  const [quantity, setQuantity] = useState('');
   const [mealType, setMealType] = useState('breakfast');
   const [units, setUnits] = useState('grams');
   const [loading, setLoading] = useState(false);
@@ -116,7 +116,7 @@ const SearchBar = ({ onSelectFood, placeholder }) => {
   const handleSelectFood = (food) => {
     onSelectFood({...food, mealType, units: `${quantity} ${units}`});
     setQuery('');
-    setQuantity('100');
+    setQuantity('');
     setSearchResults([]);
     setShowResults(false);
     setMessage('');
